@@ -1,0 +1,56 @@
+modules:
+    demo_app:
+      url: git@github.com:bladerunnerlabs/build_demo_app.git
+      alias: app
+      remote: origin
+
+    demo_infra:
+      url: git@github.com:bladerunnerlabs/build_demo_infra.git
+      alias: inf
+      remote: origin
+
+    demo_headers:
+      url: git@github.com:bladerunnerlabs/build_demo_headers.git
+      alias: hdr
+      remote: origin
+
+    demo_scripts:
+      url: git@github.com:bladerunnerlabs/build_demo_scripts.git
+      alias: spt
+      remote: origin
+
+    build-runner:
+      url: git@github.com:bladerunnerlabs/build-runner.git
+      alias: br
+      remote: origin
+
+project:
+    name: demo
+    version: 0.1
+
+cmake:
+    version: 3.12
+    single-tree: Yes
+    build: Release
+
+develop:
+    - module: demo_app
+      from: master
+      cmake: Yes
+
+consume:
+    - module: demo_infra
+      from: master
+      cmake: Yes
+
+    - module: demo_headers
+      from: master
+      cmake: Yes
+
+    - module: demo_scripts
+      from: master
+      cmake: No
+
+    - module: build-runner
+      from: master
+      cmake: No

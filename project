@@ -1,0 +1,36 @@
+#!/bin/bash
+
+if [ -z "$1" ]; then
+    echo "no arguments supplied"
+    exit 1
+fi
+
+if [ "$1" == "sync" ]; then
+    make_git="/tmp/make.git"
+    ./project.py sync > ${make_git} && make -f ${make_git} -j && rm ${make_git}
+elif [ "$1" == "push" ]; then
+    ./project.py push > ${make_git} && make -f ${make_git} -j && rm ${make_git}
+elif [ "$1" == "gen" ]; then
+    rm CMakeLists.txt
+    ./project.py gen | tee CMakeLists.txt
+elif [ "$1" == "cmake" ]; then
+    echo "cmake -S . -B build -G Ninja"
+    cmake -S . -B build -G Ninja
+elif [ "$1" == "build" ]; then
+    target=${2:-all}
+    if [ "${target}" == "--" ]; then target="all"; fi
+    args="$@"
+    normal_args="${args%%-- *}" # all args until --
+    if [[ "${normal_args}" != "${args}" ]]; then
+        extra_args="${args##* --}" # all args after --
+    fi
+    echo "cmake --build build --target ${target} ${extra_args}"
+    cmake --build build --target ${target} ${extra_args}
+elif [ "$1" == "install" ]; then
+    echo "cmake --install build"
+    cmake --install build
+else
+    echo "unsupported argument: $1"
+    exit 1
+fi
+
