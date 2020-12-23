@@ -29,6 +29,19 @@ elif [ "$1" == "build" ]; then
 elif [ "$1" == "install" ]; then
     echo "cmake --install build"
     cmake --install build
+elif [ "$1" == "utest" ]; then
+    for m in $(./project.py list); do
+        utest_path="./install/install/${m}/utest"
+        if [ -d ${utest_path} ]; then
+            for t in ${utest_path}/*; do
+                if [ -e ${t} ]; then
+                    echo "RUN ${t}"
+                    ${t} || echo "FAILED ${t}"
+                    echo
+                fi
+            done
+        fi
+    done
 else
     echo "unsupported argument: $1"
     exit 1
