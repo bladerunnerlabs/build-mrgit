@@ -23,8 +23,9 @@ function utest() {
     done
 }
 
+make_git="/tmp/make.git"
+
 if [ "$1" == "sync" ]; then
-    make_git="/tmp/make.git"
     ./project.py sync > ${make_git} && make -f ${make_git} -j && rm ${make_git}
 elif [ "$1" == "push" ]; then
     ./project.py push > ${make_git} && make -f ${make_git} -j && rm ${make_git}
