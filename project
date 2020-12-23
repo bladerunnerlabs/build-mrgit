@@ -5,6 +5,24 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
+function utest() {
+    for m in $@; do
+        echo "MODULE ${m}"
+        utest_path="./install/install/${m}/utest"
+        if [ -d ${utest_path} ]; then
+            for t in ${utest_path}/*; do
+                if [ -x ${t} ]; then
+                    echo "RUN ${t}"
+                    ${t} || echo "FAILED ${t}"
+                    echo
+                fi
+            done
+        else
+            echo -e "NO utest\n"
+        fi
+    done
+}
+
 if [ "$1" == "sync" ]; then
     make_git="/tmp/make.git"
     ./project.py sync > ${make_git} && make -f ${make_git} -j && rm ${make_git}
@@ -30,18 +48,9 @@ elif [ "$1" == "install" ]; then
     echo "cmake --install build"
     cmake --install build
 elif [ "$1" == "utest" ]; then
-    for m in $(./project.py list); do
-        utest_path="./install/install/${m}/utest"
-        if [ -d ${utest_path} ]; then
-            for t in ${utest_path}/*; do
-                if [ -e ${t} ]; then
-                    echo "RUN ${t}"
-                    ${t} || echo "FAILED ${t}"
-                    echo
-                fi
-            done
-        fi
-    done
+    utest $(./project.py list cmake)
+elif [ "$1" == "utest-dev" ]; then
+    utest $(./project.py list develop)
 else
     echo "unsupported argument: $1"
     exit 1
